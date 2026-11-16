@@ -1,0 +1,307 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Shopping Cart | VELORA</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <!-- ANNOUNCEMENT BAR -->
+    <div class="announcement-bar">
+        WELCOME TO THE VELORA SHOPPING EXPERIENCE
+    </div>
+
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+
+        <div class="container">
+
+            <a class="navbar-brand" href="/">
+                VELORA<span>.</span>
+            </a>
+
+            <button class="navbar-toggler" type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarMenu">
+
+                <span class="navbar-toggler-icon"></span>
+
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarMenu">
+
+                <ul class="navbar-nav mx-auto">
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/products">Shop</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/cart">Cart</a>
+                    </li>
+
+                </ul>
+
+                <a href="/products" class="cart-btn">
+                    Continue Shopping
+                </a>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+    <!-- CART HEADER -->
+    <section class="cart-header">
+
+        <div class="container">
+
+            <span class="section-label">
+                YOUR SHOPPING SPACE
+            </span>
+
+            <h1>Shopping <span>Cart.</span></h1>
+
+            <p>
+                Review your selected products before checkout.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- CART SECTION -->
+    <section class="cart-section">
+
+        <div class="container">
+
+            <div class="row g-4">
+
+                <!-- CART ITEMS -->
+                <div class="col-lg-8">
+
+                    <div class="cart-items-container">
+
+                        <div class="cart-title">
+                            <h2>Your Items</h2>
+
+                            <span>
+                                {{ cart|length }} Items
+                            </span>
+                        </div>
+
+
+                        {% for item in cart %}
+
+                        <div class="cart-item">
+
+                            <!-- PRODUCT IMAGE -->
+                            <div class="cart-item-image">
+
+                                {% if item['image'] %}
+
+                                <img src="{{ item['image'] }}"
+                                     alt="{{ item['name'] }}">
+
+                                {% else %}
+
+                                <span>VELORA</span>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <!-- PRODUCT DETAILS -->
+                            <div class="cart-item-info">
+
+                                <span>{{ item['category'] }}</span>
+
+                                <h3>{{ item['name'] }}</h3>
+
+                                <p>
+                                    Rs. {{ item['price'] }}
+                                </p>
+
+
+                                <!-- QUANTITY -->
+                                <form action="/update-cart/{{ item['id'] }}"
+                                      method="POST"
+                                      class="cart-quantity-form">
+
+                                    <label>Quantity:</label>
+
+                                    <input
+                                        type="number"
+                                        name="quantity"
+                                        value="{{ item['quantity'] }}"
+                                        min="1"
+                                        max="{{ item['stock'] }}">
+
+                                    <button type="submit">
+                                        Update
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+
+                            <!-- SUBTOTAL -->
+                            <div class="cart-item-total">
+
+                                <strong>
+                                    Rs. {{ item['price'] * item['quantity'] }}
+                                </strong>
+
+                                <form action="/remove-from-cart/{{ item['id'] }}"
+                                      method="POST">
+
+                                    <button type="submit"
+                                            class="remove-btn">
+
+                                        Remove
+
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                        {% else %}
+
+                        <!-- EMPTY CART -->
+                        <div class="empty-cart">
+
+                            <div class="empty-cart-icon">
+                                🛒
+                            </div>
+
+                            <h2>Your Cart Is Empty</h2>
+
+                            <p>
+                                Looks like you haven't added
+                                anything to your cart yet.
+                            </p>
+
+                            <a href="/products" class="primary-btn">
+                                Start Shopping →
+                            </a>
+
+                        </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+
+                <!-- ORDER SUMMARY -->
+                <div class="col-lg-4">
+
+                    <div class="cart-summary">
+
+                        <h2>Order Summary</h2>
+
+                        <div class="summary-row">
+
+                            <span>Subtotal</span>
+
+                            <strong>
+                                Rs. {{ subtotal }}
+                            </strong>
+
+                        </div>
+
+                        <div class="summary-row">
+
+                            <span>Shipping</span>
+
+                            <strong>
+                                Rs. {{ shipping }}
+                            </strong>
+
+                        </div>
+
+                        <div class="summary-divider"></div>
+
+                        <div class="summary-total">
+
+                            <span>Total</span>
+
+                            <strong>
+                                Rs. {{ total }}
+                            </strong>
+
+                        </div>
+
+                        <a href="/checkout"
+                           class="checkout-btn">
+
+                            Proceed To Checkout →
+
+                        </a>
+
+                        <p class="secure-message">
+                            ✦ Secure shopping experience
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- FOOTER -->
+    <footer>
+
+        <div class="container">
+
+            <h2>VELORA<span>.</span></h2>
+
+            <p>Discover Beyond Ordinary.</p>
+
+            <div class="footer-line"></div>
+
+            <small>
+                © 2026 VELORA. All rights reserved.
+            </small>
+
+        </div>
+
+    </footer>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+</body>
+</html>
